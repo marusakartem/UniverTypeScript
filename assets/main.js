@@ -1,101 +1,37 @@
 "use strict";
-// Прості типи:
-let modalOpen = false;
-// DOM-елементи:
-const openModalBtn = document.getElementById("openModalBtn");
-const closeModalBtn = document.getElementById("closeModalBtn");
-const modalBackdrop = document.getElementById("modalBackdrop");
-const loadPostsBtn = document.getElementById("loadPostsBtn");
-const loadUsersBtn = document.getElementById("loadUsersBtn");
-const dataContainer = document.getElementById("dataContainer");
-// Відкрити/закрити модалку:
-function openModal() {
-    modalBackdrop.classList.remove("hidden");
-    modalBackdrop.setAttribute("aria-hidden", "false");
-    modalOpen = true;
-}
-function closeModal() {
-    modalBackdrop.classList.add("hidden");
-    modalBackdrop.setAttribute("aria-hidden", "true");
-    modalOpen = false;
-}
-// Обробники кліків:
-openModalBtn.addEventListener("click", () => openModal());
-closeModalBtn.addEventListener("click", () => closeModal());
-modalBackdrop.addEventListener("click", (e) => {
-    if (e.target === modalBackdrop)
-        closeModal();
-});
-// Esc для закриття:
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modalOpen)
-        closeModal();
-});
-// IntersectionObserver для анімації появи секцій при скролі:
-const observed = document.querySelectorAll(".observe");
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-        if (entry.isIntersecting && entry.intersectionRatio > 0.25) {
-            entry.target.classList.add("in-view");
-            observer.unobserve(entry.target);
-        }
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMostPopularCourseType = exports.getClassroomUtilization = exports.getProfessorSchedule = exports.findAvailableClassrooms = exports.cancelLesson = exports.reassignClassroom = exports.validateLesson = exports.addLesson = exports.addProfessor = exports.schedule = exports.courses = exports.classrooms = exports.professors = void 0;
+// Підключаємо все, чого потребує додаток
+require("./data/seed"); // лише щоб збірник підняв залежності (дані вже імпортуються в store/db)
+const db_1 = require("./store/db");
+Object.defineProperty(exports, "professors", { enumerable: true, get: function () { return db_1.professors; } });
+Object.defineProperty(exports, "classrooms", { enumerable: true, get: function () { return db_1.classrooms; } });
+Object.defineProperty(exports, "courses", { enumerable: true, get: function () { return db_1.courses; } });
+Object.defineProperty(exports, "schedule", { enumerable: true, get: function () { return db_1.schedule; } });
+Object.defineProperty(exports, "addProfessor", { enumerable: true, get: function () { return db_1.addProfessor; } });
+const lessons_1 = require("./modules/lessons");
+Object.defineProperty(exports, "addLesson", { enumerable: true, get: function () { return lessons_1.addLesson; } });
+Object.defineProperty(exports, "validateLesson", { enumerable: true, get: function () { return lessons_1.validateLesson; } });
+Object.defineProperty(exports, "reassignClassroom", { enumerable: true, get: function () { return lessons_1.reassignClassroom; } });
+Object.defineProperty(exports, "cancelLesson", { enumerable: true, get: function () { return lessons_1.cancelLesson; } });
+const queries_1 = require("./modules/queries");
+Object.defineProperty(exports, "findAvailableClassrooms", { enumerable: true, get: function () { return queries_1.findAvailableClassrooms; } });
+Object.defineProperty(exports, "getProfessorSchedule", { enumerable: true, get: function () { return queries_1.getProfessorSchedule; } });
+const analytics_1 = require("./modules/analytics");
+Object.defineProperty(exports, "getClassroomUtilization", { enumerable: true, get: function () { return analytics_1.getClassroomUtilization; } });
+Object.defineProperty(exports, "getMostPopularCourseType", { enumerable: true, get: function () { return analytics_1.getMostPopularCourseType; } });
+// Невеликий демонстраційний сценарій (можна прибрати)
+function demo() {
+    const ok1 = (0, lessons_1.addLesson)({
+        courseId: 100, professorId: 1, classroomNumber: "A101", dayOfWeek: "Monday", timeSlot: "8:30-10:00"
     });
-}, {
-    threshold: [0, 0.25, 1],
-    // нижче ми «урізаємо» низ в’юпорта, щоб треба було прокрутити:
-    rootMargin: "0px 0px -15% 0px"
-});
-observed.forEach((el) => observer.observe(el));
-// Завантаження постів:
-async function loadPosts(limit = 8) {
-    clearContainer();
-    const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-    const posts = await res.json();
-    posts.slice(0, limit).forEach(renderPostCard);
-}
-// Завантаження користувачів:
-async function loadUsers(limit = 8) {
-    clearContainer();
-    const res = await fetch("https://jsonplaceholder.typicode.com/users");
-    const users = await res.json();
-    users.slice(0, limit).forEach(renderUserCard);
-}
-// Рендер карток:
-function renderPostCard(p) {
-    const card = document.createElement("div");
-    card.className = "card";
-    const title = sanitize(p.title);
-    const body = sanitize(p.body);
-    card.innerHTML = `<h4>Пост #${p.id}: ${title}</h4><p>${body}</p>`;
-    dataContainer.appendChild(card);
-}
-function renderUserCard(u) {
-    const card = document.createElement("div");
-    card.className = "card";
-    const name = sanitize(u.name);
-    const email = sanitize(u.email);
-    card.innerHTML = `<h4>${name}</h4><p>${email}</p>`;
-    dataContainer.appendChild(card);
-}
-// Корисні утиліти:
-function clearContainer() {
-    dataContainer.innerHTML = "";
-}
-// дуже проста санітизація тексту:
-function sanitize(s) {
-    return s.replace(/[&<>"']/g, (c) => {
-        var _a;
-        const map = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;"
-        };
-        return (_a = map[c]) !== null && _a !== void 0 ? _a : c;
+    const ok2 = (0, lessons_1.addLesson)({
+        courseId: 101, professorId: 2, classroomNumber: "B205", dayOfWeek: "Monday", timeSlot: "8:30-10:00"
     });
+    const free = (0, queries_1.findAvailableClassrooms)("8:30-10:00", "Monday");
+    const prof1 = (0, queries_1.getProfessorSchedule)(1);
+    const util = (0, analytics_1.getClassroomUtilization)("A101");
+    const popular = (0, analytics_1.getMostPopularCourseType)();
+    console.log({ ok1, ok2, free, prof1, util, popular, schedule: db_1.schedule });
 }
-// Прив’язка кнопок:
-loadPostsBtn.addEventListener("click", () => loadPosts(8));
-loadUsersBtn.addEventListener("click", () => loadUsers(8));
-// loadPosts(8);
+demo();
