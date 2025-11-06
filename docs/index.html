@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TS + GitHub Pages Demo</title>
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header class="site-header">
+    <h1>TypeScript Demo</h1>
+    <button id="openModalBtn" class="btn">Відкрити модалку</button>
+</header>
+
+<main>
+    <section class="hero observe">
+        <h2>Анімація при скролі</h2>
+        <p>Цей блок з’являється м’яко, коли потрапляє у в’юпорт.</p>
+    </section>
+
+    <section class="content observe">
+        <h2>Дані з JSONPlaceholder</h2>
+        <div class="actions">
+            <button id="loadPostsBtn" class="btn">Завантажити пости</button>
+            <button id="loadUsersBtn" class="btn btn-secondary">Завантажити користувачів</button>
+        </div>
+        <div id="dataContainer" class="grid"></div>
+    </section>
+</main>
+
+<!-- Модалка -->
+<div id="modalBackdrop" class="backdrop hidden" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <h3 id="modalTitle">Модальне вікно</h3>
+        <p>Це простий приклад модалки, керованої з TypeScript.</p>
+        <div class="modal-actions">
+            <button id="closeModalBtn" class="btn">Закрити</button>
+        </div>
+    </div>
+</div>
+
+<!-- Підключаємо зібраний JS як ES-модуль -->
+<script type="module" src="./assets/main.js"></script>
+</body>
+</html>
